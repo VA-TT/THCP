@@ -4,48 +4,47 @@
 
 double myfunc(double x)
 {
-    return 8 * std::pow(x, 3) - 4 * std::pow(x, 2) - 3 * x + 1;
+    return std::pow(x, 3) - 2;
 }
 
 double bisection(double a, double b, double epsilon)
 {
     double fa{myfunc(a)};
     double fb{myfunc(b)};
+
+    // Kiểm tra điều kiện dừng
     if (std::abs(a - b) < epsilon)
     {
-        return a;
+        return (a + b) / 2.0;
     }
-    if (fa * fb < 0)
+
+    // Kiểm tra xem có root trong khoảng [a,b] không
+    if (fa * fb >= 0)
     {
-        double x0 = 0.5 * (a + b);
-        if (fa * myfunc(x0) < 0)
-        {
-            return bisection(a, x0, epsilon);
-        }
-        else if (fb * myfunc(x0) < 0)
-        {
-            return bisection(b, x0, epsilon);
-        }
+        std::cerr << "Error: No root in interval [" << a << ", " << b << "]" << std::endl;
+        return NAN;
     }
-    // else if ((fa * fb > 0))
-    // {
-    //     std::cout << "No root in this range.\n"
-    // }
-    // else if ((fa == 0))
-    // {
-    //     std::cout << "Root is at a = " << a << '\n';
-    // }
-    // else if ((fb == 0))
-    // {
-    //     std::cout << "Root is at b = " << b << '\n';
-    // }
+
+    double x0 = 0.5 * (a + b);
+    double fx0 = myfunc(x0);
+
+    // Chọn khoảng con chứa root
+    if (fa * fx0 < 0)
+    {
+        return bisection(a, x0, epsilon);
+    }
+    else
+    {
+        return bisection(x0, b, epsilon);
+    }
 }
 
 int main()
 {
     // Error eps = 1e-12
     double epsilon{1e-10};
-    double x0 = bisection(0, 0.5, epsilon);
+    // Sửa khoảng để chứa root: x³ - 2 = 0 => x = ∛2 ≈ 1.26
+    double x0 = bisection(1, 2, epsilon);
 
     // In với độ chính xác cao
     std::cout
